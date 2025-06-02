@@ -3,9 +3,6 @@ import DataTable from 'react-data-table-component'
 import { AiOutlineEye } from 'react-icons/ai';
 import { Link, useNavigate } from 'react-router-dom';
 import ResourcePieChart from './ResourcePieChart';
-import VmCpuPieChart from './VmCpuPieChart';
-import CombinedCpuUsageChart from './CombinedCpuUsageChart';
-
 
 export const DomainInfo = ({ cluster_data }) => {
 
@@ -137,10 +134,6 @@ export const DomainInfo = ({ cluster_data }) => {
     let usedCores = 0;
     let totalMemory = 0;
 
-  
-
-
-
     let totalCores = 0;
     let allVmData = [];
 
@@ -158,7 +151,7 @@ export const DomainInfo = ({ cluster_data }) => {
                     allVmData.push({
                         vm_id: vm.vm_id,
                         cpu_count: vm.cpu_count || 0,
-                        memory_gb:(vm.memory_mb || 0) / 1024
+                        memory_gb: (vm.memory_mb || 0) / 1024
                     });
                 });
             });

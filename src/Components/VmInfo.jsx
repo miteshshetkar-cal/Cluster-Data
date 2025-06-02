@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { AiOutlineEye } from 'react-icons/ai';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import HostCpuUsageChart from './HostCpuUsageChart';
-import HostMemoryUsageChart from './HostMemoryUsageChart';
+
 import ResourcePieChart from './ResourcePieChart';
 
 export const VmInfo = ({ cluster_data }) => {
@@ -220,11 +219,18 @@ export const VmInfo = ({ cluster_data }) => {
     // Host Usage
     let usedMemory = 0;
     let usedCores = 0;
+    let allVmData = [];
+
 
     if (host_info.vm_inventory && Array.isArray(host_info.vm_inventory)) {
         host_info.vm_inventory.forEach(vm => {
             usedMemory += (vm.memory_mb || 0) / 1024;
             usedCores += vm.cpu_count || 0;
+            allVmData.push({
+                vm_id: vm.vm_id,
+                cpu_count: vm.cpu_count || 0,
+                memory_gb: (vm.memory_mb || 0) / 1024
+            });
         });
     }
 
@@ -242,10 +248,10 @@ export const VmInfo = ({ cluster_data }) => {
                 justifyContent: 'space-between'
             }}>
                 <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-                    <ResourcePieChart label="CPU" used={usedCores} total={host_info.num_cpu_cores} unit="cores" />
+                    <ResourcePieChart label="CPU" used={usedCores} total={host_info.num_cpu_cores} unit="cores" vmData={allVmData} dataKey="cpu_count" />
                 </div>
                 <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-                    <ResourcePieChart label="Memory" used={usedMemory} total={host_info.memory_gb} unit="GB" />
+                    <ResourcePieChart label="Memory" used={usedMemory} total={host_info.memory_gb} unit="GB" vmData={allVmData} dataKey="memory_gb" />
                 </div>
             </div>
 
