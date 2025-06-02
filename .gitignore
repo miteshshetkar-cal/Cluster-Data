@@ -1,0 +1,69 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Dependency directory
+/node_modules/
+
+# Build outputs
+/build/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*.local
+
+# IDE and editor config
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS junk files
+.DS_Store
+Thumbs.db
+
+# Coverage/test outputs
+coverage/
+jest-test-results.json
+
+# ESLint cache
+.eslintcache
+
+# Parcel, Next.js, Vite, others (just in case)
+.parcel-cache/
+.next/
+out/
+.cache/
+
+# Optional: ignore lockfile (if you're not locking versions)
+# Uncomment one depending on your package manager
+# package-lock.json
+# yarn.lock
