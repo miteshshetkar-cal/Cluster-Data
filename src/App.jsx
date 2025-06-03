@@ -395,7 +395,7 @@ function App() {
       selector: row => row.num_effective_hosts,
       sortable: true,
     },
-   
+
     {
       name: 'Overall Status',
       cell: row => {
@@ -452,20 +452,19 @@ function App() {
 
 
 
- 
+
 
   return (
-   <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<DomainInfo cluster_data={cluster} />}/>
-            
-            <Route path="hostinfo/:cluster_id" element={<HostInfo cluster_data={cluster} />} />
-            <Route path="hostinfo/:cluster_id/vminfo/:host_ip" element={<VmInfo cluster_data={cluster}/>} />
-            {/* <Route path="hostinfo/:cluster_id/vminfo/:vm_id/diskinfo" element={<DiskInfo cluster_data={cluster}/>} />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DomainInfo cluster_data={cluster} />} />
+        <Route path="hostinfo/:cluster_id" element={<HostInfo cluster_data={cluster} />} />
+        <Route path="hostinfo/:cluster_id/vminfo/:host_ip" element={<VmInfo cluster_data={cluster} />} />
+        {/* <Route path="hostinfo/:cluster_id/vminfo/:vm_id/diskinfo" element={<DiskInfo cluster_data={cluster}/>} />
             <Route path="hostinfo/:cluster_id/vminfo/:vm_id/networkinfo" element={<NetworkInfo cluster_data={cluster}/>} /> */}
-           
-        </Routes>
-      </BrowserRouter>
+
+      </Routes>
+    </BrowserRouter>
     // </div>
 
   );

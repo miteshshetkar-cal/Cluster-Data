@@ -109,6 +109,7 @@ function HostInfo({ cluster_data }) {
     let usedCores = 0;
     let totalMemory = 0;
     let totalCores = 0;
+    let allVmData = [];
 
     if (group.hosts && Array.isArray(group.hosts)) {
         group.hosts.forEach(item => {
@@ -118,10 +119,15 @@ function HostInfo({ cluster_data }) {
             item.vm_inventory.forEach(vm => {
                 usedMemory += (vm.memory_mb || 0) / 1024;
                 usedCores += vm.cpu_count || 0;
+
+                allVmData.push({
+                    vm_id: vm.vm_id,
+                    cpu_count: vm.cpu_count || 0,
+                    memory_gb: (vm.memory_mb || 0) / 1024
+                });
             });
         });
     }
-
 
     return (
 
@@ -136,10 +142,10 @@ function HostInfo({ cluster_data }) {
                 justifyContent: 'space-between'
             }}>
                 <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-                    <ResourcePieChart label="CPU" used={usedCores} total={totalCores} unit="cores" />
+                    <ResourcePieChart label="CPU" used={usedCores} total={totalCores} unit="cores" vmData={allVmData} dataKey="cpu_count" />
                 </div>
                 <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-                    <ResourcePieChart label="Memory" used={usedMemory} total={totalMemory} unit="GB" />
+                    <ResourcePieChart label="Memory" used={usedMemory} total={totalMemory} unit="GB" vmData={allVmData} dataKey="memory_gb" />
                 </div>
             </div>
 
