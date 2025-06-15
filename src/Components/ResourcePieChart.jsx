@@ -8,46 +8,46 @@ const VM_COLORS = [
   '#FF9671', '#D65DB1', '#008F7A', '#B39CD0', '#FF5E78'
 ];
 
-const AVAILABLE_COLOR = '#00C49F'; // Green for available
+const AVAILABLE_COLOR = '#00C49F'; // Green
 
-function ResourcePieChart({ label = "Resource", used = 0, total = 0, unit = "", vmData = [], dataKey = "cpu_count" }) {
+function ResourcePieChart({
+  label = "Resource",
+  used = 0,
+  total = 0,
+  unit = "",
+  vmData = [],
+  dataKey = "cpu_count"
+}) {
   const isValid = typeof used === 'number' && typeof total === 'number' && total >= 0;
-  if (!isValid) {
-    return renderMessage(label, "Invalid data provided.");
-  }
+  if (!isValid) return renderMessage(label, "Invalid data provided.");
 
   const available = total - used;
-  const chartData = [];
 
-  // Push VM usage data
-  vmData.forEach(vm => {
-    const value = vm[dataKey] || 0;
-    if (value > 0) {
-      chartData.push({
-        name: `${vm.vm_id}`,
-        value: value,
-        isAvailable: false
-      });
-    }
-  });
+  // Build the chart data with each VM as a separate slice
+  // const chartData = vmData
+  //   .map((vm) => ({
+  //     name: vm.vm_id,
+  //     value: vm[dataKey] || 0,
+  //     isAvailable: false
+  //   }))
+  //   .filter(entry => entry.value > 0);
+  const chartData = vmData
+    .map((vm, index) => ({
+      name: vm.vm_id,
+      value: vm[dataKey] || 0,
+      isAvailable: false,
+      showUsedLabel: index === 0 // Only the first VM gets the label
+    }))
+    .filter(entry => entry.value > 0);
 
-  // Add "Available" segment
+  // Add the "Available" slice if any available resources exist
   if (available > 0) {
     chartData.push({
       name: 'Available',
       value: Number(available.toFixed(2)),
       isAvailable: true
     });
-  } else if (used === 0 && total > 0) {
-    chartData.push({
-      name: 'Available',
-      value: Number(total.toFixed(2)),
-      isAvailable: true
-    });
   }
-
-  if (total === 0) return renderMessage(label, "Total is 0.");
-  if (chartData.length === 0) return renderMessage(label, "No usable data.");
 
   const overProvisioned = used > total;
   const overMsg = overProvisioned
@@ -59,9 +59,10 @@ function ResourcePieChart({ label = "Resource", used = 0, total = 0, unit = "", 
       <h3 style={styles.title}>
         {label} Usage: {total.toFixed(2)} {unit}{overMsg}
       </h3>
-      <p style={{ marginBottom: '10px', color: '#6b7280', fontSize: '14px' }}>
+      <p style={styles.subtitle}>
         Total Virtual Machines: {vmData.length}
       </p>
+
       <ResponsiveContainer width="100%" height={350}>
         <PieChart>
           <Pie
@@ -71,7 +72,17 @@ function ResourcePieChart({ label = "Resource", used = 0, total = 0, unit = "", 
             cx="50%"
             cy="50%"
             outerRadius={100}
-            label={({ name, value }) => `${name}: ${value} ${unit}`}
+            // label={({ name, value }) =>
+            //   name === "Available" ? `${name}: ${value} ${unit}` : `${"Used"}: 100`
+            // }
+            label={({ name, value, showUsedLabel }) =>
+              name === "Available"
+                ? `${name}: ${value} ${unit}`
+                : showUsedLabel
+                  ? `Used: ${used.toFixed(2)} ${unit}`
+                  : ''
+            }
+
             labelLine={false}
           >
             {chartData.map((entry, index) => (
@@ -81,16 +92,37 @@ function ResourcePieChart({ label = "Resource", used = 0, total = 0, unit = "", 
               />
             ))}
           </Pie>
-          <Tooltip
-            formatter={(value, name) => [`${value} ${unit}`, name]}
-            contentStyle={{ backgroundColor: "#f9fafb", borderRadius: "5px", fontSize: "14px" }}
-          />
+          <Tooltip content={<CustomTooltip unit={unit} />} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>
     </div>
   );
 }
+
+// Tooltip showing info based on the slice
+const CustomTooltip = ({ active, payload, unit }) => {
+  if (active && payload && payload.length) {
+    const { name, value, isAvailable } = payload[0].payload;
+
+    if (isAvailable) {
+      return (
+        <div style={styles.tooltip}>
+          <strong>Available:</strong> {value} {unit}
+        </div>
+      );
+    }
+
+    return (
+      <div style={styles.tooltip}>
+        <strong>VM ID:</strong> {name}<br />
+        <strong>Used:</strong> {value} {unit}
+      </div>
+    );
+  }
+
+  return null;
+};
 
 function renderMessage(label, message) {
   return (
@@ -112,11 +144,22 @@ const styles = {
   },
   title: {
     color: '#1f2937',
-    marginBottom: '15px',
+    marginBottom: '10px',
     fontSize: '18px',
     fontWeight: '600',
+  },
+  subtitle: {
+    marginBottom: '5px',
+    color: '#6b7280',
+    fontSize: '14px'
+  },
+  tooltip: {
+    backgroundColor: '#f9fafb',
+    padding: '10px',
+    borderRadius: '6px',
+    fontSize: '14px',
+    lineHeight: '1.5'
   }
 };
 
 export default ResourcePieChart;
-
